@@ -1,5 +1,6 @@
 // gachaGptV2 NestJS 시스템 테스트
 import * as fs from 'fs';
+import * as jwt from 'jsonwebtoken';
 
 // 샘플 데이터 타입 정의
 interface SampleData {
@@ -12,6 +13,15 @@ interface SampleData {
 
 // 샘플 데이터 로드
 const sampleData: SampleData = JSON.parse(fs.readFileSync('./sample-data.json', 'utf8'));
+
+// JWT 토큰 생성
+const generateTestToken = () => {
+  return jwt.sign(
+    { userId: 'admin-001', role: 'admin' },
+    'gacha-secret-key-2024',
+    { expiresIn: '1h' }
+  );
+};
 
 console.log('=== gachaGptV2 NestJS 시스템 테스트 ===\n');
 
@@ -132,8 +142,22 @@ async function runTests() {
 
   // 5. JWT 토큰 정보
   console.log('\n🔐 JWT 토큰 샘플:');
-  console.log(`   관리자 토큰: ${sampleData.jwtTokens.validAdminToken.substring(0, 50)}...`);
-  console.log(`   매니저 토큰: ${sampleData.jwtTokens.validManagerToken.substring(0, 50)}...`);
+  const testToken = generateTestToken();
+  console.log(`   테스트 토큰: ${testToken.substring(0, 50)}...`);
+  console.log(`   샘플 관리자 토큰: ${sampleData.jwtTokens.validAdminToken.substring(0, 50)}...`);
+
+  // 6. NestJS 특징 설명
+  console.log('\n🏗️ NestJS 아키텍처 특징:');
+  console.log('   ✅ 데코레이터 기반 컨트롤러');
+  console.log('   ✅ 의존성 주입 (DI) 패턴');
+  console.log('   ✅ 가드 기반 인증/인가');
+  console.log('   ✅ Joi 스키마 검증');
+  console.log('   ✅ 모듈화된 구조');
+
+  console.log('\n📊 실행 명령어:');
+  console.log('   개발 서버: cd gachaGptV2 && npm run start:dev');
+  console.log('   E2E 테스트: cd gachaGptV2 && npm run test:e2e');
+  console.log('   빌드: cd gachaGptV2 && npm run build');
 
   console.log('\n=== gachaGptV2 테스트 완료 ===');
 }
