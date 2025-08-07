@@ -7,7 +7,9 @@
     "build": "tsc",
     "start": "node dist/client.js",
     "dev": "ts-node-dev --respawn --transpile-only src/client.ts",
-    "simulate": "npm run build && node dist/client.js"
+    "simulate": "npm run build && node dist/client.js",
+    "demo": "ts-node src/sample-client.ts",
+    "sample": "ts-node src/sample-client.ts"
   },
   "dependencies": {
     "axios": "^1.4.0",

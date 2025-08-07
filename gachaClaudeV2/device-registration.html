@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>장치 등록 - 가챠 무인 판매기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .form-step {
+            display: none;
+        }
+        .form-step.active {
+            display: block;
+        }
+        .step-indicator {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+        .step-indicator.active {
+            background: #3b82f6;
+            color: white;
+        }
+        .step-indicator.completed {
+            background: #10b981;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl w-full space-y-8">
+            <!-- 헤더 -->
+            <div class="text-center">
+                <i class="fas fa-robot text-6xl text-blue-600 mb-4"></i>
+                <h2 class="text-3xl font-extrabold text-gray-900">
+                    가챠 무인 판매기 장치 등록
+                </h2>
+                <p class="mt-2 text-sm text-gray-600">
+                    새로운 장치를 시스템에 등록합니다
+                </p>
+            </div>
+
+            <!-- 진행 단계 표시 -->
+            <div class="flex justify-center">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center">
+                        <div class="step-indicator active w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium">
+                            1
+                        </div>
+                        <span class="ml-2 text-sm font-medium text-gray-900">기본 정보</span>
+                    </div>
+                    <div class="w-16 h-0.5 bg-gray-300"></div>
+                    <div class="flex items-center">
+                        <div class="step-indicator w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium">
+                            2
+                        </div>
+                        <span class="ml-2 text-sm font-medium text-gray-500">시스템 정보</span>
+                    </div>
+                    <div class="w-16 h-0.5 bg-gray-300"></div>
+                    <div class="flex items-center">
+                        <div class="step-indicator w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium">
+                            3
+                        </div>
+                        <span class="ml-2 text-sm font-medium text-gray-500">확인</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 등록 폼 -->
+            <div class="bg-white shadow-xl rounded-lg p-8">
+                <form id="registrationForm">
+                    <!-- 1단계: 기본 정보 -->
+                    <div class="form-step active" id="step1">
+                        <h3 class="text-lg font-medium text-gray-900 mb-6">기본 정보 입력</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="hardwareId" class="block text-sm font-medium text-gray-700">
+                                    하드웨어 ID *
+                                </label>
+                                <input type="text" id="hardwareId" name="hardwareId" required
+                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                       placeholder="예: VM001SEOUL2024">
+                                <p class="mt-1 text-xs text-gray-500">8-64자의 영숫자 조합</p>
+                            </div>
+                            <div>
+                                <label for="tenantId" class="block text-sm font-medium text-gray-700">
+                                    테넌트 ID *
+                                </label>
+                                <input type="text" id="tenantId" name="tenantId" required
+                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                       placeholder="예: 550e8400-e29b-41d4-a716-446655440001">
+                                <p class="mt-1 text-xs text-gray-500">UUID 형식</p>
+                            </div>
+                            <div>
+                                <label for="ipAddress" class="block text-sm font-medium text-gray-700">
+                                    IP 주소 *
+                                </label>
+                                <input type="text" id="ipAddress" name="ipAddress" required
+                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                       placeholder="예: 192.168.1.101">
+                                <p class="mt-1 text-xs text-gray-500">IPv4 형식</p>
+                            </div>
+                            <div>
+                                <label for="location" class="block text-sm font-medium text-gray-700">
+                                    설치 위치
+                                </label>
+                                <input type="text" id="location" name="location"
+                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                       placeholder="예: 서울 강남구">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2단계: 시스템 정보 -->
+                    <div class="form-step" id="step2">
+                        <h3 class="text-lg font-medium text-gray-900 mb-6">시스템 정보 입력</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="os" class="block text-sm font-medium text-gray-700">
+                                    운영체제 *
+                                </label>
+                                <select id="os" name="os" required
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">선택하세요</option>
+                                    <option value="Ubuntu">Ubuntu</option>
+                                    <option value="CentOS">CentOS</option>
+                                    <option value="Windows">Windows</option>
+                                    <option value="Raspberry Pi OS">Raspberry Pi OS</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="version" class="block text-sm font-medium text-gray-700">
+                                    버전 *
+                                </label>
+                                <input type="text" id="version" name="version" required
+                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                       placeholder="예: 22.04.3 LTS">
+                            </div>
+                            <div>
+                                <label for="architecture" class="block text-sm font-medium text-gray-700">
+                                    아키텍처 *
+                                </label>
+                                <select id="architecture" name="architecture" required
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">선택하세요</option>
+                                    <option value="x86_64">x86_64</option>
+                                    <option value="x64">x64</option>
+                                    <option value="armv7l">armv7l</option>
+                                    <option value="aarch64">aarch64</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="memory" class="block text-sm font-medium text-gray-700">
+                                    메모리 *
+                                </label>
+                                <select id="memory" name="memory" required
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">선택하세요</option>
+                                    <option value="4GB">4GB</option>
+                                    <option value="8GB">8GB</option>
+                                    <option value="16GB">16GB</option>
+                                    <option value="32GB">32GB</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="storage" class="block text-sm font-medium text-gray-700">
+                                    저장소 *
+                                </label>
+                                <input type="text" id="storage" name="storage" required
+                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                       placeholder="예: 256GB SSD">
+                            </div>
+                            <div>
+                                <label for="cpuModel" class="block text-sm font-medium text-gray-700">
+                                    CPU 모델
+                                </label>
+                                <input type="text" id="cpuModel" name="cpuModel"
+                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                       placeholder="예: Intel Core i5-12400">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3단계: 확인 -->
+                    <div class="form-step" id="step3">
+                        <h3 class="text-lg font-medium text-gray-900 mb-6">등록 정보 확인</h3>
+                        <div class="bg-gray-50 rounded-lg p-6">
+                            <div id="confirmationContent">
+                                <!-- 동적으로 생성될 확인 내용 -->
+                            </div>
+                        </div>
+                        
+                        <!-- 등록 상태 -->
+                        <div id="registrationStatus" class="mt-6 hidden">
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-spinner fa-spin text-blue-600 mr-3"></i>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-blue-900">등록 처리 중...</h4>
+                                        <p class="text-sm text-blue-700">장치 등록 요청을 처리하고 있습니다.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 등록 완료 -->
+                        <div id="registrationComplete" class="mt-6 hidden">
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-600 mr-3"></i>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-green-900">등록 완료!</h4>
+                                        <p class="text-sm text-green-700">장치 등록 요청이 성공적으로 제출되었습니다. 관리자 승인을 기다려주세요.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 버튼 -->
+                    <div class="flex justify-between mt-8">
+                        <button type="button" id="prevBtn" onclick="previousStep()" 
+                                class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 hidden">
+                            이전
+                        </button>
+                        <div class="flex space-x-3">
+                            <button type="button" id="nextBtn" onclick="nextStep()"
+                                    class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                다음
+                            </button>
+                            <button type="submit" id="submitBtn" 
+                                    class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 hidden">
+                                등록하기
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 샘플 데이터 자동 입력 버튼 -->
+            <div class="text-center space-x-4 mb-4">
+                <button onclick="fillSampleData()" 
+                        class="text-sm text-blue-600 hover:text-blue-800 underline">
+                    랜덤 샘플 데이터 입력
+                </button>
+                <button onclick="showSampleDataModal()" 
+                        class="text-sm text-green-600 hover:text-green-800 underline">
+                    샘플 데이터 선택하기
+                </button>
+                <button onclick="showPendingDevices()" 
+                        class="text-sm text-purple-600 hover:text-purple-800 underline">
+                    대기 중인 장치 보기
+                </button>
+            </div>
+
+            <!-- 관리자 대시보드 링크 -->
+            <div class="text-center bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex items-center justify-center mb-2">
+                    <i class="fas fa-tachometer-alt text-blue-600 mr-2"></i>
+                    <span class="text-sm font-medium text-blue-900">관리자 도구</span>
+                </div>
+                <div class="space-x-4">
+                    <a href="http://localhost:3001" target="_blank" 
+                       class="text-sm text-blue-600 hover:text-blue-800 underline">
+                        관리자 대시보드 열기
+                    </a>
+                    <button onclick="checkServerStatus()" 
+                            class="text-sm text-blue-600 hover:text-blue-800 underline">
+                        서버 상태 확인
+                    </button>
+                    <button onclick="showSystemInfo()" 
+                            class="text-sm text-blue-600 hover:text-blue-800 underline">
+                        시스템 정보
+                    </button>
+                </div>
+                <div class="text-xs text-blue-700 mt-2">
+                    로그인: admin@example.com / admin123
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let sampleData = {};
+
+        // 샘플 데이터 로드
+        async function loadSampleData() {
+            try {
+                const response = await fetch('./sample-data-ui.json');
+                sampleData = await response.json();
+                console.log('샘플 데이터 로드 완료:', sampleData);
+                updateDashboardInfo();
+            } catch (error) {
+                console.error('샘플 데이터 로드 실패:', error);
+                // 로드 실패 시 기본 샘플 데이터 사용
+                sampleData = getDefaultSampleData();
+                updateDashboardInfo();
+            }
+        }
+
+        // 기본 샘플 데이터
+        function getDefaultSampleData() {
+            return {
+                dashboard: {
+                    title: "가챠 무인 판매기 장치 등록 시스템",
+                    stats: {
+                        totalDevices: 15,
+                        pendingDevices: 5,
+                        approvedDevices: 8,
+                        rejectedDevices: 2
+                    }
+                },
+                pendingDevices: [
+                    {
+                        hardwareId: "VM001SEOUL2024",
+                        tenantId: "550e8400-e29b-41d4-a716-446655440001",
+                        location: "서울 강남구",
+                        ipAddress: "192.168.1.101",
+                        systemInfo: {
+                            os: "Ubuntu",
+                            version: "22.04.3 LTS",
+                            architecture: "x86_64",
+                            memory: "8GB",
+                            storage: "256GB SSD",
+                            cpuModel: "Intel Core i5-12400"
+                        }
+                    }
+                ]
+            };
+        }
+
+        // 대시보드 정보 업데이트
+        function updateDashboardInfo() {
+            if (sampleData.dashboard) {
+                // 제목 업데이트
+                const titleElement = document.querySelector('h2');
+                if (titleElement && sampleData.dashboard.title) {
+                    titleElement.textContent = sampleData.dashboard.title;
+                }
+
+                // 통계 정보 표시
+                if (sampleData.dashboard.stats) {
+                    showDashboardStats();
+                }
+            }
+        }
+
+        // 대시보드 통계 표시
+        function showDashboardStats() {
+            const stats = sampleData.dashboard.stats;
+            const statsHtml = `
+                <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">현재 시스템 현황</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-600">${stats.totalDevices}</div>
+                            <div class="text-sm text-gray-500">전체 장치</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-yellow-600">${stats.pendingDevices}</div>
+                            <div class="text-sm text-gray-500">승인 대기</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-green-600">${stats.approvedDevices}</div>
+                            <div class="text-sm text-gray-500">승인 완료</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-red-600">${stats.rejectedDevices}</div>
+                            <div class="text-sm text-gray-500">거부됨</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 헤더 다음에 통계 정보 삽입
+            const headerDiv = document.querySelector('.text-center');
+            headerDiv.insertAdjacentHTML('afterend', statsHtml);
+        }
+
+        // 다음 단계
+        function nextStep() {
+            if (validateCurrentStep()) {
+                if (currentStep < 3) {
+                    currentStep++;
+                    updateStepDisplay();
+                }
+            }
+        }
+
+        // 이전 단계
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepDisplay();
+            }
+        }
+
+        // 단계 표시 업데이트
+        function updateStepDisplay() {
+            // 모든 단계 숨기기
+            document.querySelectorAll('.form-step').forEach(step => {
+                step.classList.remove('active');
+            });
+
+            // 현재 단계 표시
+            document.getElementById(`step${currentStep}`).classList.add('active');
+
+            // 단계 인디케이터 업데이트
+            document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
+                indicator.classList.remove('active', 'completed');
+                if (index + 1 < currentStep) {
+                    indicator.classList.add('completed');
+                } else if (index + 1 === currentStep) {
+                    indicator.classList.add('active');
+                }
+            });
+
+            // 버튼 표시/숨기기
+            document.getElementById('prevBtn').classList.toggle('hidden', currentStep === 1);
+            document.getElementById('nextBtn').classList.toggle('hidden', currentStep === 3);
+            document.getElementById('submitBtn').classList.toggle('hidden', currentStep !== 3);
+
+            // 3단계에서 확인 내용 생성
+            if (currentStep === 3) {
+                generateConfirmation();
+            }
+        }
+
+        // 현재 단계 유효성 검사
+        function validateCurrentStep() {
+            const currentStepElement = document.getElementById(`step${currentStep}`);
+            const requiredFields = currentStepElement.querySelectorAll('[required]');
+            
+            for (let field of requiredFields) {
+                if (!field.value.trim()) {
+                    field.focus();
+                    alert(`${field.previousElementSibling.textContent.replace(' *', '')} 항목을 입력해주세요.`);
+                    return false;
+                }
+            }
+
+            // IP 주소 형식 검증
+            if (currentStep === 1) {
+                const ipAddress = document.getElementById('ipAddress').value;
+                const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
+                if (!ipRegex.test(ipAddress)) {
+                    alert('올바른 IP 주소 형식을 입력해주세요.');
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // 확인 내용 생성
+        function generateConfirmation() {
+            const formData = new FormData(document.getElementById('registrationForm'));
+            const data = Object.fromEntries(formData);
+            
+            const content = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-3">기본 정보</h4>
+                        <div class="space-y-2 text-sm">
+                            <div><span class="text-gray-500">하드웨어 ID:</span> <span class="font-medium">${data.hardwareId}</span></div>
+                            <div><span class="text-gray-500">테넌트 ID:</span> <span class="font-medium">${data.tenantId}</span></div>
+                            <div><span class="text-gray-500">IP 주소:</span> <span class="font-medium">${data.ipAddress}</span></div>
+                            <div><span class="text-gray-500">설치 위치:</span> <span class="font-medium">${data.location || '미입력'}</span></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-3">시스템 정보</h4>
+                        <div class="space-y-2 text-sm">
+                            <div><span class="text-gray-500">운영체제:</span> <span class="font-medium">${data.os} ${data.version}</span></div>
+                            <div><span class="text-gray-500">아키텍처:</span> <span class="font-medium">${data.architecture}</span></div>
+                            <div><span class="text-gray-500">메모리:</span> <span class="font-medium">${data.memory}</span></div>
+                            <div><span class="text-gray-500">저장소:</span> <span class="font-medium">${data.storage}</span></div>
+                            <div><span class="text-gray-500">CPU:</span> <span class="font-medium">${data.cpuModel || '미입력'}</span></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('confirmationContent').innerHTML = content;
+        }
+
+        // 폼 제출
+        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // 등록 처리 중 표시
+            document.getElementById('registrationStatus').classList.remove('hidden');
+            document.getElementById('registrationComplete').classList.add('hidden');
+            document.getElementById('submitBtn').disabled = true;
+            
+            const formData = new FormData(this);
+            
+            try {
+                // 실제 API 호출
+                const result = await submitToAPI(formData);
+                
+                // 처리 중 상태 숨기기
+                document.getElementById('registrationStatus').classList.add('hidden');
+                
+                if (result.success) {
+                    // 성공 시
+                    document.getElementById('registrationComplete').classList.remove('hidden');
+                    document.getElementById('registrationComplete').innerHTML = `
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-600 mr-3"></i>
+                                <div>
+                                    <h4 class="text-sm font-medium text-green-900">등록 완료!</h4>
+                                    <p class="text-sm text-green-700">${result.message}</p>
+                                    <p class="text-xs text-green-600 mt-1">관리자 승인을 기다려주세요. 승인 상태는 관리자 대시보드에서 확인할 수 있습니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    showNotification('장치 등록이 완료되었습니다!', 'success');
+                    
+                    // 폼 리셋 버튼으로 변경
+                    document.getElementById('submitBtn').textContent = '새 장치 등록';
+                    document.getElementById('submitBtn').onclick = function() {
+                        location.reload();
+                    };
+                } else {
+                    // 실패 시
+                    document.getElementById('registrationComplete').classList.remove('hidden');
+                    document.getElementById('registrationComplete').innerHTML = `
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-circle text-red-600 mr-3"></i>
+                                <div>
+                                    <h4 class="text-sm font-medium text-red-900">등록 실패</h4>
+                                    <p class="text-sm text-red-700">${result.message}</p>
+                                    <p class="text-xs text-red-600 mt-1">입력 정보를 확인하고 다시 시도해주세요.</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    showNotification('장치 등록에 실패했습니다: ' + result.message, 'error');
+                }
+            } catch (error) {
+                // 오류 처리
+                document.getElementById('registrationStatus').classList.add('hidden');
+                document.getElementById('registrationComplete').classList.remove('hidden');
+                document.getElementById('registrationComplete').innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle text-red-600 mr-3"></i>
+                            <div>
+                                <h4 class="text-sm font-medium text-red-900">연결 오류</h4>
+                                <p class="text-sm text-red-700">서버와 연결할 수 없습니다. 네트워크 상태를 확인해주세요.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                showNotification('서버 연결 오류가 발생했습니다.', 'error');
+                console.error('등록 오류:', error);
+            } finally {
+                document.getElementById('submitBtn').disabled = false;
+            }
+        });
+
+        // 샘플 데이터 자동 입력
+        function fillSampleData() {
+            if (!sampleData.pendingDevices || sampleData.pendingDevices.length === 0) {
+                alert('샘플 데이터를 불러올 수 없습니다.');
+                return;
+            }
+
+            // 랜덤하게 샘플 장치 선택
+            const randomIndex = Math.floor(Math.random() * sampleData.pendingDevices.length);
+            const selectedDevice = sampleData.pendingDevices[randomIndex];
+            
+            const sampleDevice = {
+                hardwareId: selectedDevice.hardwareId + '_COPY',
+                tenantId: selectedDevice.tenantId,
+                ipAddress: selectedDevice.ipAddress,
+                location: selectedDevice.location,
+                os: selectedDevice.systemInfo.os,
+                version: selectedDevice.systemInfo.version || '22.04.3 LTS',
+                architecture: selectedDevice.systemInfo.architecture,
+                memory: selectedDevice.systemInfo.memory,
+                storage: selectedDevice.systemInfo.storage,
+                cpuModel: selectedDevice.systemInfo.cpuModel || 'Intel Core i5-12400'
+            };
+
+            Object.entries(sampleDevice).forEach(([key, value]) => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = value;
+                }
+            });
+
+            alert(`샘플 데이터가 입력되었습니다!\n선택된 장치: ${selectedDevice.location} (${selectedDevice.hardwareId})`);
+        }
+
+        // 샘플 데이터 선택 모달 표시
+        function showSampleDataModal() {
+            if (!sampleData.pendingDevices || sampleData.pendingDevices.length === 0) {
+                alert('샘플 데이터를 불러올 수 없습니다.');
+                return;
+            }
+
+            let modalHtml = `
+                <div id="sampleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-96 overflow-y-auto">
+                        <h3 class="text-lg font-semibold mb-4">샘플 데이터 선택</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            `;
+
+            sampleData.pendingDevices.forEach((device, index) => {
+                modalHtml += `
+                    <div class="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer" onclick="selectSampleDevice(${index})">
+                        <div class="font-semibold text-blue-600">${device.hardwareId}</div>
+                        <div class="text-sm text-gray-600">${device.location}</div>
+                        <div class="text-sm text-gray-500">${device.systemInfo.os} ${device.systemInfo.version}</div>
+                        <div class="text-sm text-gray-500">${device.systemInfo.memory} / ${device.systemInfo.storage}</div>
+                    </div>
+                `;
+            });
+
+            modalHtml += `
+                        </div>
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button onclick="closeSampleModal()" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                                취소
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        // 샘플 장치 선택
+        function selectSampleDevice(index) {
+            const selectedDevice = sampleData.pendingDevices[index];
+            
+            const deviceData = {
+                hardwareId: selectedDevice.hardwareId + '_COPY',
+                tenantId: selectedDevice.tenantId,
+                ipAddress: selectedDevice.ipAddress,
+                location: selectedDevice.location,
+                os: selectedDevice.systemInfo.os,
+                version: selectedDevice.systemInfo.version || '22.04.3 LTS',
+                architecture: selectedDevice.systemInfo.architecture,
+                memory: selectedDevice.systemInfo.memory,
+                storage: selectedDevice.systemInfo.storage,
+                cpuModel: selectedDevice.systemInfo.cpuModel || 'Intel Core i5-12400'
+            };
+
+            Object.entries(deviceData).forEach(([key, value]) => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = value;
+                }
+            });
+
+            closeSampleModal();
+            alert(`샘플 데이터가 입력되었습니다!\n선택된 장치: ${selectedDevice.location} (${selectedDevice.hardwareId})`);
+        }
+
+        // 샘플 모달 닫기
+        function closeSampleModal() {
+            const modal = document.getElementById('sampleModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // 대기 중인 장치 목록 표시
+        function showPendingDevices() {
+            if (!sampleData.pendingDevices || sampleData.pendingDevices.length === 0) {
+                alert('대기 중인 장치가 없습니다.');
+                return;
+            }
+
+            let modalHtml = `
+                <div id="pendingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-lg p-6 max-w-6xl w-full mx-4 max-h-96 overflow-y-auto">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold">대기 중인 장치 목록 (${sampleData.pendingDevices.length}개)</h3>
+                            <button onclick="closePendingModal()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">장치 정보</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">위치</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">시스템</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">우선순위</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">등록일</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+            `;
+
+            sampleData.pendingDevices.forEach(device => {
+                const priorityColor = device.priority === 'high' ? 'text-red-600' : 
+                                    device.priority === 'medium' ? 'text-yellow-600' : 'text-green-600';
+                const priorityText = device.priority === 'high' ? '높음' : 
+                                   device.priority === 'medium' ? '보통' : '낮음';
+                
+                modalHtml += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">${device.hardwareId}</div>
+                            <div class="text-sm text-gray-500">${device.ipAddress}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">${device.location}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">${device.systemInfo.os}</div>
+                            <div class="text-sm text-gray-500">${device.systemInfo.memory} / ${device.systemInfo.storage}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm font-medium ${priorityColor}">${priorityText}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${new Date(device.registeredAt).toLocaleDateString('ko-KR')}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            modalHtml += `
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-6 flex justify-end">
+                            <button onclick="closePendingModal()" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
+                                닫기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        // 대기 장치 모달 닫기
+        function closePendingModal() {
+            const modal = document.getElementById('pendingModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // 실제 API로 장치 등록
+        async function submitToAPI(formData) {
+            const apiUrl = 'http://localhost:3000/api/devices/register';
+            
+            const deviceData = {
+                hardwareId: formData.get('hardwareId'),
+                tenantId: formData.get('tenantId'),
+                ipAddress: formData.get('ipAddress'),
+                systemInfo: {
+                    os: formData.get('os'),
+                    version: formData.get('version'),
+                    architecture: formData.get('architecture'),
+                    memory: formData.get('memory'),
+                    storage: formData.get('storage')
+                }
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(deviceData)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok && result.status === 'success') {
+                    return { success: true, message: result.message };
+                } else {
+                    return { success: false, message: result.message || '등록에 실패했습니다.' };
+                }
+            } catch (error) {
+                console.error('API 호출 오류:', error);
+                return { success: false, message: '서버와 연결할 수 없습니다. 네트워크를 확인해주세요.' };
+            }
+        }
+
+        // 알림 표시
+        function showNotification(message, type = 'info') {
+            const notificationHtml = `
+                <div id="notification" class="fixed top-4 right-4 z-50 max-w-sm">
+                    <div class="bg-white rounded-lg shadow-lg border-l-4 ${type === 'success' ? 'border-green-500' : type === 'error' ? 'border-red-500' : 'border-blue-500'} p-4">
+                        <div class="flex items-center">
+                            <i class="fas ${type === 'success' ? 'fa-check-circle text-green-500' : type === 'error' ? 'fa-exclamation-circle text-red-500' : 'fa-info-circle text-blue-500'} mr-3"></i>
+                            <div class="text-sm text-gray-700">${message}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 기존 알림 제거
+            const existingNotification = document.getElementById('notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            document.body.insertAdjacentHTML('beforeend', notificationHtml);
+            
+            // 3초 후 자동 제거
+            setTimeout(() => {
+                const notification = document.getElementById('notification');
+                if (notification) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+
+        // 서버 상태 확인
+        async function checkServerStatus() {
+            try {
+                showNotification('서버 상태를 확인하는 중...', 'info');
+                
+                const response = await fetch('http://localhost:3000/health');
+                const result = await response.json();
+                
+                if (response.ok) {
+                    const statusHtml = `
+                        <div id="statusModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-lg font-semibold text-green-600">
+                                        <i class="fas fa-check-circle mr-2"></i>서버 정상 동작
+                                    </h3>
+                                    <button onclick="closeStatusModal()" class="text-gray-500 hover:text-gray-700">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="space-y-2 text-sm">
+                                    <div><span class="font-medium">상태:</span> ${result.message}</div>
+                                    <div><span class="font-medium">환경:</span> ${result.environment || 'development'}</div>
+                                    <div><span class="font-medium">샘플 데이터:</span> ${result.usingSampleData ? '사용 중' : '미사용'}</div>
+                                    <div><span class="font-medium">인메모리 DB:</span> ${result.usingInMemoryDB ? '사용 중' : '미사용'}</div>
+                                    <div><span class="font-medium">확인 시간:</span> ${new Date(result.timestamp).toLocaleString('ko-KR')}</div>
+                                </div>
+                                <div class="mt-6 flex justify-end">
+                                    <button onclick="closeStatusModal()" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                                        확인
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.insertAdjacentHTML('beforeend', statusHtml);
+                    showNotification('서버가 정상적으로 동작 중입니다.', 'success');
+                } else {
+                    showNotification('서버 상태 확인에 실패했습니다.', 'error');
+                }
+            } catch (error) {
+                showNotification('서버에 연결할 수 없습니다. 서버가 실행 중인지 확인해주세요.', 'error');
+            }
+        }
+
+        // 상태 모달 닫기
+        function closeStatusModal() {
+            const modal = document.getElementById('statusModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // 시스템 정보 표시
+        function showSystemInfo() {
+            if (!sampleData.systemHealth) {
+                showNotification('시스템 정보를 불러올 수 없습니다.', 'error');
+                return;
+            }
+
+            const systemInfo = sampleData.systemHealth;
+            const userInfo = sampleData.userInfo || {};
+            
+            const infoHtml = `
+                <div id="systemModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold">시스템 정보</h3>
+                            <button onclick="closeSystemModal()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-semibold text-gray-900 mb-2">시스템 상태</h4>
+                                <div class="grid grid-cols-2 gap-2 text-sm">
+                                    <div>API 상태: <span class="text-green-600">${systemInfo.apiStatus}</span></div>
+                                    <div>DB 상태: <span class="text-green-600">${systemInfo.databaseStatus}</span></div>
+                                    <div>큐 상태: <span class="text-green-600">${systemInfo.queueStatus}</span></div>
+                                    <div>응답 시간: <span class="text-blue-600">${systemInfo.responseTime}</span></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-semibold text-gray-900 mb-2">사용자 정보</h4>
+                                <div class="text-sm space-y-1">
+                                    <div>사용자: ${userInfo.username || 'admin'}</div>
+                                    <div>역할: ${userInfo.role || '시스템 관리자'}</div>
+                                    <div>마지막 로그인: ${userInfo.lastLogin ? new Date(userInfo.lastLogin).toLocaleString('ko-KR') : '정보 없음'}</div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-semibold text-gray-900 mb-2">API 엔드포인트</h4>
+                                <div class="text-xs space-y-1 bg-gray-50 p-2 rounded">
+                                    <div>• POST /api/devices/register - 장치 등록</div>
+                                    <div>• GET /api/devices/status/:id - 상태 조회</div>
+                                    <div>• GET /api/devices/pending - 대기 목록</div>
+                                    <div>• PUT /api/devices/:id/approve - 승인</div>
+                                    <div>• PUT /api/devices/:id/reject - 거부</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 flex justify-end">
+                            <button onclick="closeSystemModal()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                확인
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', infoHtml);
+        }
+
+        // 시스템 모달 닫기
+        function closeSystemModal() {
+            const modal = document.getElementById('systemModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSampleData();
+            updateStepDisplay();
+            
+            // 서버 상태 자동 확인 (선택적)
+            setTimeout(() => {
+                checkServerStatus();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

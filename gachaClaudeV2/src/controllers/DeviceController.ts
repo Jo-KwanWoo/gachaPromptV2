@@ -72,8 +72,8 @@ export class DeviceController {
 
   async approveDevice(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const { deviceId } = req.params;
-      const result = await this.deviceService.approveDevice(deviceId);
+      const { hardwareId } = req.params;
+      const result = await this.deviceService.approveDevice(hardwareId);
       
       if (result.success) {
         res.status(200).json({
@@ -97,9 +97,9 @@ export class DeviceController {
 
   async rejectDevice(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const { deviceId } = req.params;
+      const { hardwareId } = req.params;
       const { reason } = req.body;
-      const result = await this.deviceService.rejectDevice(deviceId, reason);
+      const result = await this.deviceService.rejectDevice(hardwareId, reason);
       
       if (result.success) {
         res.status(200).json({

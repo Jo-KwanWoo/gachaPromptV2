@@ -29,11 +29,11 @@ export const createDeviceRoutes = (
     deviceController.getPendingDevices(req, res)
   );
   
-  router.put('/:deviceId/approve', authMiddleware, validateDeviceApproval, (req, res) => 
+  router.put('/:hardwareId/approve', authMiddleware, (req, res) => 
     deviceController.approveDevice(req, res)
   );
   
-  router.put('/:deviceId/reject', authMiddleware, validateDeviceRejection, (req, res) => 
+  router.put('/:hardwareId/reject', authMiddleware, (req, res) => 
     deviceController.rejectDevice(req, res)
   );
 

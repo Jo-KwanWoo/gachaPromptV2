@@ -96,8 +96,8 @@ export class DeviceRegistrationService {
     };
   }
 
-  async approveDevice(deviceId: string): Promise<{ success: boolean; message: string }> {
-    const device = await this.deviceRepository.findByDeviceId(deviceId);
+  async approveDevice(hardwareId: string): Promise<{ success: boolean; message: string }> {
+    const device = await this.deviceRepository.findByHardwareId(hardwareId);
     if (!device) {
       return { success: false, message: 'Device not found' };
     }
@@ -118,8 +118,8 @@ export class DeviceRegistrationService {
     return { success: true, message: 'Device approved successfully' };
   }
 
-  async rejectDevice(deviceId: string, reason: string): Promise<{ success: boolean; message: string }> {
-    const device = await this.deviceRepository.findByDeviceId(deviceId);
+  async rejectDevice(hardwareId: string, reason: string): Promise<{ success: boolean; message: string }> {
+    const device = await this.deviceRepository.findByHardwareId(hardwareId);
     if (!device) {
       return { success: false, message: 'Device not found' };
     }
