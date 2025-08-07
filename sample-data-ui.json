@@ -31,7 +31,7 @@
       "estimatedApprovalTime": "2시간"
     },
     {
-      "id": "pending-002", 
+      "id": "pending-002",
       "hardwareId": "VM002BUSAN2024",
       "tenantId": "550e8400-e29b-41d4-a716-446655440002",
       "location": "부산 해운대구",
@@ -39,7 +39,7 @@
       "registeredAt": "2024-01-16T11:15:00Z",
       "systemInfo": {
         "os": "CentOS 8.5",
-        "architecture": "x86_64", 
+        "architecture": "x86_64",
         "memory": "16GB",
         "storage": "512GB SSD",
         "cpuModel": "AMD Ryzen 7 5700G",
@@ -51,7 +51,7 @@
     },
     {
       "id": "pending-003",
-      "hardwareId": "VM003DAEGU2024", 
+      "hardwareId": "VM003DAEGU2024",
       "tenantId": "550e8400-e29b-41d4-a716-446655440003",
       "location": "대구 중구",
       "ipAddress": "10.0.0.15",
@@ -71,7 +71,7 @@
     {
       "id": "pending-004",
       "hardwareId": "VM004INCHEON24",
-      "tenantId": "550e8400-e29b-41d4-a716-446655440004", 
+      "tenantId": "550e8400-e29b-41d4-a716-446655440004",
       "location": "인천 연수구",
       "ipAddress": "172.16.0.50",
       "registeredAt": "2024-01-16T16:45:00Z",
@@ -91,7 +91,7 @@
       "id": "pending-005",
       "hardwareId": "VM005GWANGJU24",
       "tenantId": "550e8400-e29b-41d4-a716-446655440005",
-      "location": "광주 서구", 
+      "location": "광주 서구",
       "ipAddress": "203.252.33.100",
       "registeredAt": "2024-01-16T18:10:00Z",
       "systemInfo": {
@@ -123,7 +123,7 @@
     },
     {
       "id": "approved-002",
-      "hardwareId": "VM102APPROVED02", 
+      "hardwareId": "VM102APPROVED02",
       "deviceId": "dev-550e8400-e29b-41d4-a716-446655440102",
       "location": "부산 중구",
       "ipAddress": "192.168.1.202",
@@ -150,7 +150,7 @@
     {
       "id": "rejected-002",
       "hardwareId": "VM202REJECTED02",
-      "location": "울산 남구", 
+      "location": "울산 남구",
       "ipAddress": "172.20.0.50",
       "rejectedAt": "2024-01-13T11:20:00Z",
       "rejectionReason": "보안 정책 위반: 승인되지 않은 네트워크 포트 개방 감지",
@@ -161,7 +161,7 @@
   ],
   "systemHealth": {
     "apiStatus": "healthy",
-    "databaseStatus": "healthy", 
+    "databaseStatus": "healthy",
     "queueStatus": "healthy",
     "lastUpdate": "2024-01-16T19:50:00Z",
     "responseTime": "45ms",
@@ -176,7 +176,7 @@
       "severity": "info"
     },
     {
-      "id": "activity-002", 
+      "id": "activity-002",
       "type": "approval",
       "message": "장치 승인 완료: VM101APPROVED01",
       "timestamp": "2024-01-15T10:15:00Z",
@@ -186,7 +186,7 @@
       "id": "activity-003",
       "type": "rejection",
       "message": "장치 거부: VM201REJECTED01 (하드웨어 사양 부족)",
-      "timestamp": "2024-01-14T16:45:00Z", 
+      "timestamp": "2024-01-14T16:45:00Z",
       "severity": "warning"
     },
     {
@@ -208,7 +208,7 @@
     },
     {
       "id": "notif-002",
-      "type": "info", 
+      "type": "info",
       "title": "일일 등록 현황",
       "message": "오늘 3개의 새로운 장치 등록 요청이 있었습니다.",
       "timestamp": "2024-01-16T18:00:00Z",
@@ -227,7 +227,7 @@
         },
         {
           "label": "승인 완료",
-          "data": [1, 3, 2, 2, 3, 4, 1], 
+          "data": [1, 3, 2, 2, 3, 4, 1],
           "backgroundColor": "rgba(75, 192, 192, 0.2)",
           "borderColor": "rgba(75, 192, 192, 1)"
         }
@@ -238,7 +238,7 @@
       "data": [8, 5, 2],
       "backgroundColor": [
         "rgba(75, 192, 192, 0.8)",
-        "rgba(255, 206, 86, 0.8)", 
+        "rgba(255, 206, 86, 0.8)",
         "rgba(255, 99, 132, 0.8)"
       ]
     }
@@ -249,7 +249,7 @@
     "lastLogin": "2024-01-16T08:30:00Z",
     "permissions": [
       "device:view",
-      "device:approve", 
+      "device:approve",
       "device:reject",
       "system:monitor",
       "user:manage"
