@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가챠 무인 판매기 장치 등록 시스템</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .priority-high { border-left: 4px solid #ef4444; }
+        .priority-medium { border-left: 4px solid #f59e0b; }
+        .priority-low { border-left: 4px solid #10b981; }
+        .status-approved { background: linear-gradient(135deg, #10b981, #059669); }
+        .status-pending { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .status-rejected { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 헤더 -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <i class="fas fa-robot text-3xl text-blue-600 mr-3"></i>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">가챠 무인 판매기</h1>
+                        <p class="text-sm text-gray-500">장치 등록 관리 시스템</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <i class="fas fa-bell text-gray-400 text-xl cursor-pointer hover:text-gray-600"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">2</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=3b82f6&color=fff" 
+                             class="w-8 h-8 rounded-full" alt="Admin">
+                        <span class="text-sm font-medium text-gray-700">관리자</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- 통계 카드 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6 card-hover transition-all duration-200">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100">
+                        <i class="fas fa-server text-blue-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">전체 장치</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="totalDevices">15</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6 card-hover transition-all duration-200">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-yellow-100">
+                        <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">승인 대기</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="pendingDevices">5</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6 card-hover transition-all duration-200">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100">
+                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">승인 완료</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="approvedDevices">8</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6 card-hover transition-all duration-200">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-red-100">
+                        <i class="fas fa-times-circle text-red-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">거부됨</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="rejectedDevices">2</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6 card-hover transition-all duration-200">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-purple-100">
+                        <i class="fas fa-plus-circle text-purple-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">오늘 등록</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="todayRegistrations">3</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- 승인 대기 장치 목록 -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900">승인 대기 중인 장치</h2>
+                        <p class="text-sm text-gray-500">관리자 승인이 필요한 장치 목록</p>
+                    </div>
+                    <div class="p-6">
+                        <div id="pendingDevicesList" class="space-y-4">
+                            <!-- 동적으로 생성될 장치 목록 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 사이드바 -->
+            <div class="space-y-6">
+                <!-- 시스템 상태 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">시스템 상태</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">API 서버</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">정상</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">데이터베이스</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">정상</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">메시지 큐</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">정상</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">응답 시간</span>
+                            <span class="text-sm font-medium text-gray-900">45ms</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 최근 활동 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">최근 활동</h3>
+                    <div id="recentActivities" class="space-y-3">
+                        <!-- 동적으로 생성될 활동 목록 -->
+                    </div>
+                </div>
+
+                <!-- 알림 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">알림</h3>
+                    <div id="notifications" class="space-y-3">
+                        <!-- 동적으로 생성될 알림 목록 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 차트 섹션 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">등록 추이</h3>
+                <canvas id="registrationChart" width="400" height="200"></canvas>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">상태별 분포</h3>
+                <canvas id="statusChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 모달 -->
+    <div id="deviceModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">장치 상세 정보</h3>
+                </div>
+                <div id="modalContent" class="p-6">
+                    <!-- 동적으로 생성될 모달 내용 -->
+                </div>
+                <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                    <button onclick="closeModal()" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                        취소
+                    </button>
+                    <button id="approveBtn" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                        승인
+                    </button>
+                    <button id="rejectBtn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                        거부
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let sampleData = {};
+
+        // 샘플 데이터 로드
+        async function loadSampleData() {
+            try {
+                const response = await fetch('./sample-data-ui.json');
+                sampleData = await response.json();
+                initializeDashboard();
+            } catch (error) {
+                console.error('샘플 데이터 로드 실패:', error);
+                // 로컬 테스트용 더미 데이터
+                initializeWithDummyData();
+            }
+        }
+
+        // 대시보드 초기화
+        function initializeDashboard() {
+            updateStats();
+            renderPendingDevices();
+            renderRecentActivities();
+            renderNotifications();
+            renderCharts();
+        }
+
+        // 통계 업데이트
+        function updateStats() {
+            const stats = sampleData.dashboard?.stats || {};
+            document.getElementById('totalDevices').textContent = stats.totalDevices || 0;
+            document.getElementById('pendingDevices').textContent = stats.pendingDevices || 0;
+            document.getElementById('approvedDevices').textContent = stats.approvedDevices || 0;
+            document.getElementById('rejectedDevices').textContent = stats.rejectedDevices || 0;
+            document.getElementById('todayRegistrations').textContent = stats.todayRegistrations || 0;
+        }
+
+        // 승인 대기 장치 렌더링
+        function renderPendingDevices() {
+            const container = document.getElementById('pendingDevicesList');
+            const devices = sampleData.pendingDevices || [];
+            
+            container.innerHTML = devices.map(device => `
+                <div class="border rounded-lg p-4 priority-${device.priority} card-hover transition-all duration-200 cursor-pointer"
+                     onclick="showDeviceModal('${device.id}')">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h4 class="font-semibold text-gray-900">${device.hardwareId}</h4>
+                            <p class="text-sm text-gray-600">${device.location}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-1 bg-${getPriorityColor(device.priority)}-100 text-${getPriorityColor(device.priority)}-800 text-xs rounded-full">
+                                ${getPriorityText(device.priority)}
+                            </span>
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                                ${device.status}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="text-gray-500">IP 주소:</span>
+                            <span class="font-medium">${device.ipAddress}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">등록 시간:</span>
+                            <span class="font-medium">${formatDateTime(device.registeredAt)}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">OS:</span>
+                            <span class="font-medium">${device.systemInfo.os}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">예상 승인:</span>
+                            <span class="font-medium">${device.estimatedApprovalTime}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 최근 활동 렌더링
+        function renderRecentActivities() {
+            const container = document.getElementById('recentActivities');
+            const activities = sampleData.recentActivities || [];
+            
+            container.innerHTML = activities.map(activity => `
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-${getActivityIcon(activity.type)} text-${getSeverityColor(activity.severity)}-500"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm text-gray-900">${activity.message}</p>
+                        <p class="text-xs text-gray-500">${formatDateTime(activity.timestamp)}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 알림 렌더링
+        function renderNotifications() {
+            const container = document.getElementById('notifications');
+            const notifications = sampleData.notifications || [];
+            
+            container.innerHTML = notifications.map(notif => `
+                <div class="p-3 rounded-lg ${notif.read ? 'bg-gray-50' : 'bg-blue-50'} border-l-4 border-${getNotificationColor(notif.type)}-500">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <h4 class="text-sm font-medium text-gray-900">${notif.title}</h4>
+                            <p class="text-xs text-gray-600 mt-1">${notif.message}</p>
+                            <p class="text-xs text-gray-500 mt-1">${formatDateTime(notif.timestamp)}</p>
+                        </div>
+                        ${!notif.read ? '<div class="w-2 h-2 bg-blue-500 rounded-full"></div>' : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 차트 렌더링
+        function renderCharts() {
+            // 등록 추이 차트
+            const registrationCtx = document.getElementById('registrationChart').getContext('2d');
+            const registrationData = sampleData.chartData?.registrationTrend;
+            
+            if (registrationData) {
+                new Chart(registrationCtx, {
+                    type: 'line',
+                    data: registrationData,
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 상태별 분포 차트
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            const statusData = sampleData.chartData?.statusDistribution;
+            
+            if (statusData) {
+                new Chart(statusCtx, {
+                    type: 'doughnut',
+                    data: statusData,
+                    options: {
+                        responsive: true
+                    }
+                });
+            }
+        }
+
+        // 장치 상세 모달 표시
+        function showDeviceModal(deviceId) {
+            const device = sampleData.pendingDevices?.find(d => d.id === deviceId);
+            if (!device) return;
+
+            const modal = document.getElementById('deviceModal');
+            const content = document.getElementById('modalContent');
+            
+            content.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-3">기본 정보</h4>
+                        <div class="space-y-2 text-sm">
+                            <div><span class="text-gray-500">하드웨어 ID:</span> <span class="font-medium">${device.hardwareId}</span></div>
+                            <div><span class="text-gray-500">테넌트 ID:</span> <span class="font-medium">${device.tenantId}</span></div>
+                            <div><span class="text-gray-500">위치:</span> <span class="font-medium">${device.location}</span></div>
+                            <div><span class="text-gray-500">IP 주소:</span> <span class="font-medium">${device.ipAddress}</span></div>
+                            <div><span class="text-gray-500">등록 시간:</span> <span class="font-medium">${formatDateTime(device.registeredAt)}</span></div>
+                            <div><span class="text-gray-500">우선순위:</span> <span class="font-medium">${getPriorityText(device.priority)}</span></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-3">시스템 정보</h4>
+                        <div class="space-y-2 text-sm">
+                            <div><span class="text-gray-500">운영체제:</span> <span class="font-medium">${device.systemInfo.os}</span></div>
+                            <div><span class="text-gray-500">아키텍처:</span> <span class="font-medium">${device.systemInfo.architecture}</span></div>
+                            <div><span class="text-gray-500">메모리:</span> <span class="font-medium">${device.systemInfo.memory}</span></div>
+                            <div><span class="text-gray-500">저장소:</span> <span class="font-medium">${device.systemInfo.storage}</span></div>
+                            <div><span class="text-gray-500">CPU:</span> <span class="font-medium">${device.systemInfo.cpuModel}</span></div>
+                            <div><span class="text-gray-500">네트워크:</span> <span class="font-medium">${device.systemInfo.networkInterface}</span></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 버튼 이벤트 설정
+            document.getElementById('approveBtn').onclick = () => approveDevice(deviceId);
+            document.getElementById('rejectBtn').onclick = () => rejectDevice(deviceId);
+            
+            modal.classList.remove('hidden');
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('deviceModal').classList.add('hidden');
+        }
+
+        // 장치 승인
+        function approveDevice(deviceId) {
+            if (confirm('이 장치를 승인하시겠습니까?')) {
+                alert(`장치 ${deviceId}가 승인되었습니다.`);
+                closeModal();
+                // 실제 구현에서는 API 호출
+            }
+        }
+
+        // 장치 거부
+        function rejectDevice(deviceId) {
+            const reason = prompt('거부 사유를 입력하세요:');
+            if (reason) {
+                alert(`장치 ${deviceId}가 거부되었습니다.\n사유: ${reason}`);
+                closeModal();
+                // 실제 구현에서는 API 호출
+            }
+        }
+
+        // 유틸리티 함수들
+        function getPriorityColor(priority) {
+            const colors = { high: 'red', medium: 'yellow', low: 'green' };
+            return colors[priority] || 'gray';
+        }
+
+        function getPriorityText(priority) {
+            const texts = { high: '높음', medium: '보통', low: '낮음' };
+            return texts[priority] || priority;
+        }
+
+        function getActivityIcon(type) {
+            const icons = { 
+                registration: 'plus-circle', 
+                approval: 'check-circle', 
+                rejection: 'times-circle',
+                heartbeat: 'heartbeat'
+            };
+            return icons[type] || 'info-circle';
+        }
+
+        function getSeverityColor(severity) {
+            const colors = { success: 'green', warning: 'yellow', info: 'blue', error: 'red' };
+            return colors[severity] || 'gray';
+        }
+
+        function getNotificationColor(type) {
+            const colors = { urgent: 'red', warning: 'yellow', info: 'blue' };
+            return colors[type] || 'gray';
+        }
+
+        function formatDateTime(dateString) {
+            return new Date(dateString).toLocaleString('ko-KR');
+        }
+
+        function initializeWithDummyData() {
+            // 로컬 테스트용 더미 데이터
+            sampleData = {
+                dashboard: { stats: { totalDevices: 15, pendingDevices: 5, approvedDevices: 8, rejectedDevices: 2, todayRegistrations: 3 } },
+                pendingDevices: [],
+                recentActivities: [],
+                notifications: []
+            };
+            initializeDashboard();
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', loadSampleData);
+    </script>
+</body>
+</html>

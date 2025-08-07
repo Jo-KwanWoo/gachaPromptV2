@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - JWT_SECRET=${JWT_SECRET}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - DEVICES_TABLE_NAME=${DEVICES_TABLE_NAME}
+    depends_on:
+      - localstack
+    networks:
+      - vending-network
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000/api
+    depends_on:
+      - backend
+    networks:
+      - vending-network
+
+  # Local AWS services for development
+  localstack:
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=dynamodb,sqs
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+    volumes:
+      - "./tmp/localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - vending-network
+
+networks:
+  vending-network:
+    driver: bridge

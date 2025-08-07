@@ -1,0 +1,249 @@
+{
+  "deviceRegistrationRequests": [
+    {
+      "hardwareId": "VM001SEOUL2024",
+      "tenantId": "550e8400-e29b-41d4-a716-446655440001",
+      "ipAddress": "192.168.1.101",
+      "systemInfo": {
+        "os": "Ubuntu",
+        "version": "22.04.3 LTS",
+        "architecture": "x86_64",
+        "memory": "8GB",
+        "storage": "256GB SSD"
+      }
+    },
+    {
+      "hardwareId": "VM002BUSAN2024",
+      "tenantId": "550e8400-e29b-41d4-a716-446655440002",
+      "ipAddress": "192.168.1.102",
+      "systemInfo": {
+        "os": "CentOS",
+        "version": "8.5",
+        "architecture": "x86_64",
+        "memory": "16GB",
+        "storage": "512GB SSD"
+      }
+    },
+    {
+      "hardwareId": "VM003DAEGU2024",
+      "tenantId": "550e8400-e29b-41d4-a716-446655440003",
+      "ipAddress": "10.0.0.15",
+      "systemInfo": {
+        "os": "Windows",
+        "version": "11 Pro",
+        "architecture": "x64",
+        "memory": "32GB",
+        "storage": "1TB NVMe"
+      }
+    },
+    {
+      "hardwareId": "VM004INCHEON24",
+      "tenantId": "550e8400-e29b-41d4-a716-446655440004",
+      "ipAddress": "172.16.0.50",
+      "systemInfo": {
+        "os": "Raspberry Pi OS",
+        "version": "11 (bullseye)",
+        "architecture": "armv7l",
+        "memory": "4GB",
+        "storage": "64GB microSD"
+      }
+    },
+    {
+      "hardwareId": "VM005GWANGJU24",
+      "tenantId": "550e8400-e29b-41d4-a716-446655440005",
+      "ipAddress": "203.252.33.100",
+      "systemInfo": {
+        "os": "Ubuntu",
+        "version": "20.04.6 LTS",
+        "architecture": "aarch64",
+        "memory": "8GB",
+        "storage": "128GB eMMC"
+      }
+    }
+  ],
+  "existingDevices": [
+    {
+      "deviceId": "dev-550e8400-e29b-41d4-a716-446655440101",
+      "hardwareId": "VM101APPROVED01",
+      "tenantId": "550e8400-e29b-41d4-a716-446655440001",
+      "ipAddress": "192.168.1.201",
+      "systemInfo": {
+        "os": "Ubuntu",
+        "version": "22.04.3 LTS",
+        "architecture": "x86_64",
+        "memory": "16GB",
+        "storage": "512GB SSD"
+      },
+      "status": "approved",
+      "sqsQueueUrl": "https://sqs.ap-northeast-2.amazonaws.com/123456789012/device-dev-550e8400-e29b-41d4-a716-446655440101-queue",
+      "createdAt": "2024-01-15T09:30:00.000Z",
+      "updatedAt": "2024-01-15T10:15:00.000Z"
+    },
+    {
+      "deviceId": "dev-550e8400-e29b-41d4-a716-446655440102",
+      "hardwareId": "VM102REJECTED01",
+      "tenantId": "550e8400-e29b-41d4-a716-446655440002",
+      "ipAddress": "192.168.1.202",
+      "systemInfo": {
+        "os": "CentOS",
+        "version": "7.9",
+        "architecture": "x86_64",
+        "memory": "4GB",
+        "storage": "128GB HDD"
+      },
+      "status": "rejected",
+      "rejectionReason": "하드웨어 사양이 최소 요구사항을 충족하지 않음 (메모리 부족)",
+      "createdAt": "2024-01-14T14:20:00.000Z",
+      "updatedAt": "2024-01-14T16:45:00.000Z"
+    },
+    {
+      "deviceId": "dev-550e8400-e29b-41d4-a716-446655440103",
+      "hardwareId": "VM103PENDING001",
+      "tenantId": "550e8400-e29b-41d4-a716-446655440003",
+      "ipAddress": "10.0.0.25",
+      "systemInfo": {
+        "os": "Ubuntu",
+        "version": "22.04.3 LTS",
+        "architecture": "x86_64",
+        "memory": "8GB",
+        "storage": "256GB SSD"
+      },
+      "status": "pending",
+      "createdAt": "2024-01-16T11:00:00.000Z",
+      "updatedAt": "2024-01-16T11:00:00.000Z"
+    }
+  ],
+  "adminUsers": [
+    {
+      "username": "admin",
+      "password": "admin123!",
+      "role": "administrator",
+      "permissions": ["device:approve", "device:reject", "device:view"]
+    },
+    {
+      "username": "manager",
+      "password": "manager456!",
+      "role": "manager",
+      "permissions": ["device:view"]
+    }
+  ],
+  "testScenarios": {
+    "validRegistration": {
+      "description": "정상적인 장치 등록 요청",
+      "request": {
+        "hardwareId": "TESTVM001VALID",
+        "tenantId": "550e8400-e29b-41d4-a716-446655440999",
+        "ipAddress": "192.168.100.1",
+        "systemInfo": {
+          "os": "Ubuntu",
+          "version": "22.04.3 LTS",
+          "architecture": "x86_64",
+          "memory": "8GB",
+          "storage": "256GB SSD"
+        }
+      },
+      "expectedResponse": {
+        "status": "success",
+        "message": "등록 요청 완료"
+      }
+    },
+    "invalidRegistration": {
+      "description": "잘못된 형식의 등록 요청",
+      "request": {
+        "hardwareId": "",
+        "tenantId": "invalid-uuid",
+        "ipAddress": "999.999.999.999",
+        "systemInfo": null
+      },
+      "expectedResponse": {
+        "status": "error",
+        "message": "입력값 오류"
+      }
+    },
+    "duplicateRegistration": {
+      "description": "중복 하드웨어 ID로 등록 시도",
+      "request": {
+        "hardwareId": "VM101APPROVED01",
+        "tenantId": "550e8400-e29b-41d4-a716-446655440001",
+        "ipAddress": "192.168.1.203",
+        "systemInfo": {
+          "os": "Ubuntu",
+          "version": "22.04.3 LTS",
+          "architecture": "x86_64",
+          "memory": "8GB",
+          "storage": "256GB SSD"
+        }
+      },
+      "expectedResponse": {
+        "status": "error",
+        "message": "중복 등록 요청"
+      }
+    },
+    "statusCheck": {
+      "approved": {
+        "hardwareId": "VM101APPROVED01",
+        "expectedResponse": {
+          "status": "success",
+          "message": "장치 승인됨",
+          "data": {
+            "deviceId": "dev-550e8400-e29b-41d4-a716-446655440101",
+            "sqsQueueUrl": "https://sqs.ap-northeast-2.amazonaws.com/123456789012/device-dev-550e8400-e29b-41d4-a716-446655440101-queue"
+          }
+        }
+      },
+      "pending": {
+        "hardwareId": "VM103PENDING001",
+        "expectedResponse": {
+          "status": "success",
+          "message": "승인 대기 중",
+          "data": {}
+        }
+      },
+      "notFound": {
+        "hardwareId": "NONEXISTENT001",
+        "expectedResponse": {
+          "status": "error",
+          "message": "장치 없음"
+        }
+      }
+    },
+    "adminActions": {
+      "approve": {
+        "deviceId": "dev-550e8400-e29b-41d4-a716-446655440103",
+        "expectedResponse": {
+          "status": "success",
+          "message": "장치 승인 완료"
+        }
+      },
+      "reject": {
+        "deviceId": "dev-550e8400-e29b-41d4-a716-446655440103",
+        "reason": "보안 정책 위반으로 인한 거부",
+        "expectedResponse": {
+          "status": "success",
+          "message": "장치 거부 완료"
+        }
+      }
+    }
+  },
+  "jwtTokens": {
+    "validAdminToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluaXN0cmF0b3IiLCJpYXQiOjE3MDUzOTIwMDAsImV4cCI6MTcwNTQ3ODQwMH0.example-signature",
+    "validManagerToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbmFnZXIiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTcwNTM5MjAwMCwiZXhwIjoxNzA1NDc4NDAwfQ.example-signature",
+    "expiredToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluaXN0cmF0b3IiLCJpYXQiOjE3MDUzMDAwMDAsImV4cCI6MTcwNTMwMzYwMH0.expired-signature",
+    "invalidToken": "invalid.jwt.token"
+  },
+  "apiEndpoints": {
+    "deviceRegistration": "POST /api/devices/register",
+    "deviceStatus": "GET /api/devices/status/:hardwareId",
+    "pendingDevices": "GET /api/devices/pending",
+    "approveDevice": "PUT /api/devices/:deviceId/approve",
+    "rejectDevice": "PUT /api/devices/:deviceId/reject"
+  },
+  "environmentVariables": {
+    "JWT_SECRET": "your-super-secret-jwt-key-for-testing",
+    "AWS_REGION": "ap-northeast-2",
+    "DYNAMODB_TABLE_NAME": "VendingMachineDevices",
+    "SQS_QUEUE_PREFIX": "vending-machine-",
+    "TOKEN_EXPIRY": "24h",
+    "DEVICE_REGISTRATION_TIMEOUT": "24h"
+  }
+}
