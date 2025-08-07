@@ -1,0 +1,263 @@
+{
+  "dashboard": {
+    "title": "가챠 무인 판매기 장치 등록 시스템",
+    "subtitle": "Device Registration Management Dashboard",
+    "stats": {
+      "totalDevices": 15,
+      "pendingDevices": 5,
+      "approvedDevices": 8,
+      "rejectedDevices": 2,
+      "todayRegistrations": 3
+    }
+  },
+  "pendingDevices": [
+    {
+      "id": "pending-001",
+      "hardwareId": "VM001SEOUL2024",
+      "tenantId": "550e8400-e29b-41d4-a716-446655440001",
+      "location": "서울 강남구",
+      "ipAddress": "192.168.1.101",
+      "registeredAt": "2024-01-16T09:30:00Z",
+      "systemInfo": {
+        "os": "Ubuntu",
+        "version": "22.04.3 LTS",
+        "architecture": "x86_64",
+        "memory": "8GB",
+        "storage": "256GB SSD",
+        "cpuModel": "Intel Core i5-12400",
+        "networkInterface": "Ethernet 1Gbps"
+      },
+      "status": "pending",
+      "priority": "high",
+      "estimatedApprovalTime": "2시간"
+    },
+    {
+      "id": "pending-002", 
+      "hardwareId": "VM002BUSAN2024",
+      "tenantId": "550e8400-e29b-41d4-a716-446655440002",
+      "location": "부산 해운대구",
+      "ipAddress": "192.168.1.102",
+      "registeredAt": "2024-01-16T11:15:00Z",
+      "systemInfo": {
+        "os": "CentOS",
+        "version": "8.5",
+        "architecture": "x86_64", 
+        "memory": "16GB",
+        "storage": "512GB SSD",
+        "cpuModel": "AMD Ryzen 7 5700G",
+        "networkInterface": "WiFi 802.11ac"
+      },
+      "status": "pending",
+      "priority": "medium",
+      "estimatedApprovalTime": "4시간"
+    },
+    {
+      "id": "pending-003",
+      "hardwareId": "VM003DAEGU2024", 
+      "tenantId": "550e8400-e29b-41d4-a716-446655440003",
+      "location": "대구 중구",
+      "ipAddress": "10.0.0.15",
+      "registeredAt": "2024-01-16T14:20:00Z",
+      "systemInfo": {
+        "os": "Windows",
+        "version": "11 Pro",
+        "architecture": "x64",
+        "memory": "32GB",
+        "storage": "1TB NVMe",
+        "cpuModel": "Intel Core i7-13700K",
+        "networkInterface": "Ethernet 2.5Gbps"
+      },
+      "status": "pending",
+      "priority": "low",
+      "estimatedApprovalTime": "6시간"
+    },
+    {
+      "id": "pending-004",
+      "hardwareId": "VM004INCHEON24",
+      "tenantId": "550e8400-e29b-41d4-a716-446655440004", 
+      "location": "인천 연수구",
+      "ipAddress": "172.16.0.50",
+      "registeredAt": "2024-01-16T16:45:00Z",
+      "systemInfo": {
+        "os": "Raspberry Pi OS",
+        "version": "11 (bullseye)",
+        "architecture": "armv7l",
+        "memory": "4GB",
+        "storage": "64GB microSD",
+        "cpuModel": "ARM Cortex-A72",
+        "networkInterface": "WiFi 802.11n"
+      },
+      "status": "pending",
+      "priority": "high",
+      "estimatedApprovalTime": "1시간"
+    },
+    {
+      "id": "pending-005",
+      "hardwareId": "VM005GWANGJU24",
+      "tenantId": "550e8400-e29b-41d4-a716-446655440005",
+      "location": "광주 서구", 
+      "ipAddress": "203.252.33.100",
+      "registeredAt": "2024-01-16T18:10:00Z",
+      "systemInfo": {
+        "os": "Ubuntu",
+        "version": "20.04.6 LTS",
+        "architecture": "aarch64",
+        "memory": "8GB",
+        "storage": "128GB eMMC",
+        "cpuModel": "ARM Cortex-A78",
+        "networkInterface": "5G Modem"
+      },
+      "status": "pending",
+      "priority": "medium",
+      "estimatedApprovalTime": "3시간"
+    }
+  ],
+  "approvedDevices": [
+    {
+      "id": "approved-001",
+      "hardwareId": "VM101APPROVED01",
+      "deviceId": "dev-550e8400-e29b-41d4-a716-446655440101",
+      "location": "서울 종로구",
+      "ipAddress": "192.168.1.201",
+      "approvedAt": "2024-01-15T10:15:00Z",
+      "sqsQueueUrl": "https://sqs.ap-northeast-2.amazonaws.com/123456789012/device-queue-001",
+      "status": "approved",
+      "uptime": "99.8%",
+      "lastHeartbeat": "2024-01-16T19:45:00Z",
+      "dailyTransactions": 127
+    },
+    {
+      "id": "approved-002",
+      "hardwareId": "VM102APPROVED02", 
+      "deviceId": "dev-550e8400-e29b-41d4-a716-446655440102",
+      "location": "부산 중구",
+      "ipAddress": "192.168.1.202",
+      "approvedAt": "2024-01-14T15:30:00Z",
+      "sqsQueueUrl": "https://sqs.ap-northeast-2.amazonaws.com/123456789012/device-queue-002",
+      "status": "approved",
+      "uptime": "98.5%",
+      "lastHeartbeat": "2024-01-16T19:43:00Z",
+      "dailyTransactions": 89
+    }
+  ],
+  "rejectedDevices": [
+    {
+      "id": "rejected-001",
+      "hardwareId": "VM201REJECTED01",
+      "location": "대전 유성구",
+      "ipAddress": "10.1.1.100",
+      "rejectedAt": "2024-01-14T16:45:00Z",
+      "rejectionReason": "하드웨어 사양이 최소 요구사항을 충족하지 않음 (메모리 부족: 2GB < 4GB)",
+      "status": "rejected",
+      "canReapply": true,
+      "reapplyAfter": "2024-01-21T00:00:00Z"
+    },
+    {
+      "id": "rejected-002",
+      "hardwareId": "VM202REJECTED02",
+      "location": "울산 남구", 
+      "ipAddress": "172.20.0.50",
+      "rejectedAt": "2024-01-13T11:20:00Z",
+      "rejectionReason": "보안 정책 위반: 승인되지 않은 네트워크 포트 개방 감지",
+      "status": "rejected",
+      "canReapply": false,
+      "reapplyAfter": null
+    }
+  ],
+  "systemHealth": {
+    "apiStatus": "healthy",
+    "databaseStatus": "healthy", 
+    "queueStatus": "healthy",
+    "lastUpdate": "2024-01-16T19:50:00Z",
+    "responseTime": "45ms",
+    "errorRate": "0.02%"
+  },
+  "recentActivities": [
+    {
+      "id": "activity-001",
+      "type": "registration",
+      "message": "새로운 장치 등록 요청: VM005GWANGJU24",
+      "timestamp": "2024-01-16T18:10:00Z",
+      "severity": "info"
+    },
+    {
+      "id": "activity-002", 
+      "type": "approval",
+      "message": "장치 승인 완료: VM101APPROVED01",
+      "timestamp": "2024-01-15T10:15:00Z",
+      "severity": "success"
+    },
+    {
+      "id": "activity-003",
+      "type": "rejection",
+      "message": "장치 거부: VM201REJECTED01 (하드웨어 사양 부족)",
+      "timestamp": "2024-01-14T16:45:00Z", 
+      "severity": "warning"
+    },
+    {
+      "id": "activity-004",
+      "type": "heartbeat",
+      "message": "장치 상태 업데이트: 15개 장치 정상 동작 중",
+      "timestamp": "2024-01-16T19:45:00Z",
+      "severity": "info"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif-001",
+      "type": "urgent",
+      "title": "승인 대기 중인 고우선순위 장치",
+      "message": "VM004INCHEON24 장치가 1시간 이상 승인 대기 중입니다.",
+      "timestamp": "2024-01-16T19:30:00Z",
+      "read": false
+    },
+    {
+      "id": "notif-002",
+      "type": "info", 
+      "title": "일일 등록 현황",
+      "message": "오늘 3개의 새로운 장치 등록 요청이 있었습니다.",
+      "timestamp": "2024-01-16T18:00:00Z",
+      "read": true
+    }
+  ],
+  "chartData": {
+    "registrationTrend": {
+      "labels": ["1월 10일", "1월 11일", "1월 12일", "1월 13일", "1월 14일", "1월 15일", "1월 16일"],
+      "datasets": [
+        {
+          "label": "등록 요청",
+          "data": [2, 4, 1, 3, 5, 2, 3],
+          "backgroundColor": "rgba(54, 162, 235, 0.2)",
+          "borderColor": "rgba(54, 162, 235, 1)"
+        },
+        {
+          "label": "승인 완료",
+          "data": [1, 3, 2, 2, 3, 4, 1], 
+          "backgroundColor": "rgba(75, 192, 192, 0.2)",
+          "borderColor": "rgba(75, 192, 192, 1)"
+        }
+      ]
+    },
+    "statusDistribution": {
+      "labels": ["승인됨", "대기중", "거부됨"],
+      "data": [8, 5, 2],
+      "backgroundColor": [
+        "rgba(75, 192, 192, 0.8)",
+        "rgba(255, 206, 86, 0.8)", 
+        "rgba(255, 99, 132, 0.8)"
+      ]
+    }
+  },
+  "userInfo": {
+    "username": "admin",
+    "role": "시스템 관리자",
+    "lastLogin": "2024-01-16T08:30:00Z",
+    "permissions": [
+      "device:view",
+      "device:approve", 
+      "device:reject",
+      "system:monitor",
+      "user:manage"
+    ]
+  }
+}

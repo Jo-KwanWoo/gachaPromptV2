@@ -1,85 +1,57 @@
 {
-  "name": "gacha-vending-machine-system",
+  "name": "vending-machine-registration-system",
   "version": "1.0.0",
-  "description": "TypeScript 기반 무인 자판기 장치 등록 및 관리 시스템",
-  "main": "index.js",
+  "description": "Vending machine device registration system",
+  "main": "dist/server.js",
   "scripts": {
-    "test": "node run-all-tests.js",
-    "test:gemini": "node test-gachaGeminiV2.js",
-    "test:gpt": "npx ts-node test-gachaGptV2.ts",
-    "test:claude": "npx ts-node test-gachaClaudeV2.ts",
-    "serve": "python -m http.server 8000",
-    "serve:node": "npx http-server",
-    "dev:claude": "cd gachaClaudeV2 && npm run dev",
-    "build": "npm run build:claude",
-    "build:claude": "cd gachaClaudeV2 && npm run build",
-    "lint": "eslint . --ext .ts,.js",
-    "format": "prettier --write \"**/*.{ts,js,json,md}\""
-  },
-  "keywords": [
-    "typescript",
-    "nodejs",
-    "express",
-    "nestjs",
-    "vending-machine",
-    "device-registration",
-    "aws",
-    "dynamodb",
-    "sqs",
-    "jwt",
-    "dashboard",
-    "ui-ux"
-  ],
-  "author": {
-    "name": "Gacha Vending Machine Team",
-    "email": "team@gacha-vm.com"
-  },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/your-username/gacha-vending-machine-system.git"
-  },
-  "bugs": {
-    "url": "https://github.com/your-username/gacha-vending-machine-system/issues"
-  },
-  "homepage": "https://github.com/your-username/gacha-vending-machine-system#readme",
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.0.0",
-    "ts-node": "^10.9.0",
-    "eslint": "^8.0.0",
-    "prettier": "^3.0.0",
-    "http-server": "^14.1.1"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:integration": "ts-node src/__tests__/integration/api-test.ts",
+    "seed:data": "ts-node src/scripts/seed-data.ts seed",
+    "clear:data": "ts-node src/scripts/seed-data.ts clear",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "setup": "powershell -ExecutionPolicy Bypass -File scripts/setup.ps1",
+    "setup:bash": "bash scripts/setup.sh",
+    "dev:all": "powershell -ExecutionPolicy Bypass -File scripts/start-dev.ps1",
+    "dev:all:bash": "bash scripts/start-dev.sh",
+    "db:create": "node scripts/create-dynamodb-table.js create",
+    "db:delete": "node scripts/create-dynamodb-table.js delete",
+    "docker:build": "docker build -t vending-machine-backend .",
+    "docker:run": "docker run -p 3000:3000 vending-machine-backend",
+    "docker:compose": "docker-compose up -d",
+    "docker:compose:down": "docker-compose down"
   },
   "dependencies": {
-    "express": "^4.18.0",
-    "jsonwebtoken": "^9.0.0",
-    "joi": "^17.9.0",
-    "uuid": "^9.0.0",
+    "express": "^4.18.2",
     "cors": "^2.8.5",
     "helmet": "^7.0.0",
-    "dotenv": "^16.3.0"
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "joi": "^17.9.2",
+    "aws-sdk": "^2.1400.0",
+    "uuid": "^9.0.0",
+    "dotenv": "^16.3.1"
   },
-  "directories": {
-    "test": ".",
-    "doc": "docs"
-  },
-  "files": [
-    "gachaClaudeV2/",
-    "gachaGptV2/",
-    "gachaGeminiV2.ts",
-    "dashboard.html",
-    "device-registration.html",
-    "sample-data.json",
-    "sample-data-ui.json",
-    "test-*.ts",
-    "test-*.js",
-    "run-all-tests.js",
-    "README.md",
-    "README-UI.md"
-  ]
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/cors": "^2.8.13",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/joi": "^17.2.3",
+    "@types/uuid": "^9.0.2",
+    "@types/node": "^20.4.2",
+    "typescript": "^5.1.6",
+    "ts-node-dev": "^2.0.0",
+    "jest": "^29.6.1",
+    "@types/jest": "^29.5.3",
+    "ts-jest": "^29.1.1",
+    "eslint": "^8.45.0",
+    "@typescript-eslint/eslint-plugin": "^6.2.0",
+    "@typescript-eslint/parser": "^6.2.0"
+  }
 }
