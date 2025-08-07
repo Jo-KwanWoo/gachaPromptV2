@@ -1,201 +1,251 @@
-# 🤖 가챠 무인 판매기 장치 등록 시스템
+# 무인 자판기 장치 등록 시스템
 
-TypeScript 기반 무인 자판기 장치 등록 및 관리 시스템입니다. 3가지 다른 아키텍처 구현체와 완전한 UI/UX를 제공합니다.
-
-## 📋 프로젝트 개요
-
-전국 각지의 무인 자판기 장치들이 중앙 서버에 자동으로 등록되고, 관리자가 이를 승인하거나 거부할 수 있는 시스템입니다.
-
-### 🎯 주요 기능
-- 🔐 **장치 자동 등록**: 하드웨어 정보 기반 자동 등록
-- 👨‍💼 **관리자 승인/거부**: JWT 기반 인증으로 보안 관리
-- 📊 **실시간 대시보드**: 장치 상태 모니터링 및 통계
-- 🔄 **상태 폴링**: 5분 간격 승인 상태 확인
-- 📈 **시각화**: 등록 추이 및 상태별 분포 차트
+TypeScript 기반의 무인 자판기 장치 등록 및 관리 시스템입니다. SRP(단일 책임 원칙)를 적용한 계층 구조로 설계되었으며, AWS 클라우드 인프라를 활용합니다.
 
 ## 🏗️ 시스템 아키텍처
 
-### 기술 스택
-- **Backend**: TypeScript, NestJS/Express.js
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   자판기 장치    │    │   백엔드 서버    │    │  관리자 대시보드  │
+│  (Node.js)      │◄──►│  (Express.js)   │◄──►│   (React.js)    │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                              │
+                              ▼
+                    ┌─────────────────┐
+                    │   AWS Services  │
+                    │  - DynamoDB     │
+                    │  - SQS          │
+                    └─────────────────┘
+```
+
+## 📋 주요 기능
+
+### 🤖 자판기 장치
+- 네트워크 연결 시 자동 등록 요청
+- 하드웨어 정보 수집 및 전송
+- 승인 상태 주기적 확인 (5분 간격)
+- 네트워크 오류 시 자동 재시도
+- 24시간 후 자동 재등록
+
+### 🖥️ 백엔드 서버
+- RESTful API 제공
+- JWT 기반 인증
+- 장치 등록 요청 처리
+- 관리자 승인/거부 기능
+- DynamoDB 데이터 저장
+- SQS 큐 생성 및 관리
+
+### 📊 관리자 대시보드
+- 실시간 장치 현황 모니터링
+- 등록 요청 승인/거부
+- 장치 검색 및 필터링
+- 반응형 웹 인터페이스
+
+## 🛠️ 기술 스택
+
+- **Backend**: Node.js, Express.js, TypeScript
+- **Frontend**: React.js, TypeScript, Tailwind CSS
 - **Database**: AWS DynamoDB
 - **Message Queue**: AWS SQS
-- **Frontend**: HTML5, Tailwind CSS, Chart.js
 - **Authentication**: JWT
-
-### 구현체 비교
-
-| 구현체 | 프레임워크 | 특징 | 점수 |
-|--------|------------|------|------|
-| **gachaClaudeV2** | Express.js | 엔터프라이즈급 아키텍처, 완벽한 검증 | ⭐⭐⭐⭐⭐ (45.29점) |
-| **gachaGptV2** | NestJS | 모던 프레임워크, 데코레이터 패턴 | ⭐⭐⭐ (34.10점) |
-| **gachaGeminiV2** | 단일파일 | 교육용, 뛰어난 문서화 | ⭐⭐⭐ (35.58점) |
+- **Validation**: Joi
+- **HTTP Client**: Axios
 
 ## 📁 프로젝트 구조
 
 ```
-📦 gacha-vending-machine-system
-├── 🎨 UI/UX
-│   ├── dashboard.html              # 관리자 대시보드
-│   ├── device-registration.html    # 장치 등록 화면
-│   ├── sample-data-ui.json        # UI용 샘플 데이터
-│   └── README-UI.md               # UI 실행 가이드
-├── 🏗️ Backend Implementations
-│   ├── gachaClaudeV2/             # Express.js 구현체 (최우수)
-│   ├── gachaGptV2/                # NestJS 구현체
-│   └── gachaGeminiV2.ts           # 단일파일 구현체
-├── 🧪 Testing
-│   ├── test-gachaClaudeV2.ts      # Express 테스트
-│   ├── test-gachaGptV2.ts         # NestJS 테스트
-│   ├── test-gachaGeminiV2.js      # 단일파일 테스트
-│   ├── run-all-tests.js           # 통합 테스트 실행기
-│   └── sample-data.json           # API 테스트용 데이터
-└── 📚 Documentation
-    ├── README.md                  # 프로젝트 메인 문서
-    └── README-UI.md               # UI 전용 가이드
+├── src/                          # 백엔드 소스코드
+│   ├── domain/                   # 도메인 모델 및 비즈니스 규칙
+│   │   ├── Device.ts
+│   │   └── validators/
+│   ├── service/                  # 비즈니스 로직
+│   │   └── DeviceRegistrationService.ts
+│   ├── interface/                # 외부 시스템 인터페이스
+│   │   ├── repositories/
+│   │   ├── messaging/
+│   │   └── auth/
+│   ├── controllers/              # API 컨트롤러
+│   ├── routes/                   # 라우팅
+│   ├── middleware/               # 미들웨어
+│   └── server.ts                 # 서버 진입점
+├── frontend/                     # 프론트엔드 소스코드
+│   ├── src/
+│   │   ├── components/           # React 컴포넌트
+│   │   ├── pages/                # 페이지 컴포넌트
+│   │   ├── services/             # API 서비스
+│   │   └── types/                # TypeScript 타입 정의
+├── client-simulator/             # 자판기 클라이언트 시뮬레이터
+└── scripts/                      # 유틸리티 스크립트
 ```
 
-## 🚀 빠른 시작
+## 🚀 설치 및 실행
 
-### 1. UI 데모 실행 (추천)
+### 1. 환경 설정
+
 ```bash
-# 로컬 서버 실행
-python -m http.server 8000
-# 또는
-npx http-server
+# 백엔드 환경 변수 설정
+cp .env.example .env
 
-# 브라우저에서 접속
-http://localhost:8000/dashboard.html
-http://localhost:8000/device-registration.html
+# 프론트엔드 환경 변수 설정
+cp frontend/.env.example frontend/.env
+
+# 클라이언트 시뮬레이터 환경 변수 설정
+cp client-simulator/.env.example client-simulator/.env
 ```
 
-### 2. 백엔드 테스트 실행
+### 2. 의존성 설치
+
 ```bash
-# Node.js 테스트
-node test-gachaGeminiV2.js
-
-# TypeScript 테스트 (ts-node 필요)
-npx ts-node test-gachaGptV2.ts
-npx ts-node test-gachaClaudeV2.ts
-
-# 전체 테스트 정보
-node run-all-tests.js
-```
-
-### 3. 실제 서버 실행 (gachaClaudeV2 - 최우수 구현체)
-```bash
-cd gachaClaudeV2
+# 백엔드
 npm install
+
+# 프론트엔드
+cd frontend
+npm install
+
+# 클라이언트 시뮬레이터
+cd ../client-simulator
+npm install
+```
+
+### 3. AWS 설정
+
+```bash
+# DynamoDB 테이블 생성
+node scripts/create-dynamodb-table.js create
+```
+
+### 4. 서버 실행
+
+```bash
+# 백엔드 개발 서버
+npm run dev
+
+# 프론트엔드 개발 서버
+cd frontend
+npm start
+
+# 자판기 클라이언트 시뮬레이터
+cd client-simulator
 npm run dev
 ```
 
-## 🎨 UI/UX 기능
+## 📡 API 엔드포인트
 
-### 📊 관리자 대시보드
-- **실시간 통계**: 전체/대기/승인/거부 장치 수
-- **승인 관리**: 우선순위별 장치 목록 및 상세 정보
-- **시스템 모니터링**: API, DB, 큐 상태 확인
-- **활동 로그**: 등록, 승인, 거부 이력
-- **차트**: 등록 추이 및 상태별 분포
+### 장치 관련 API
 
-### 📝 장치 등록 화면
-- **3단계 등록**: 기본정보 → 시스템정보 → 확인
-- **실시간 검증**: IP 주소, UUID 형식 등
-- **샘플 데이터**: 자동 입력 기능
-- **진행 표시**: 단계별 진행 상황
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/devices/register` | 장치 등록 요청 | ❌ |
+| GET | `/api/devices/status/:hardwareId` | 장치 상태 확인 | ❌ |
+| GET | `/api/devices/pending` | 대기 중인 장치 목록 | ✅ |
+| PUT | `/api/devices/:deviceId/approve` | 장치 승인 | ✅ |
+| PUT | `/api/devices/:deviceId/reject` | 장치 거부 | ✅ |
 
-## 🔧 API 엔드포인트
+### 요청/응답 예시
 
-| 메소드 | 경로 | 설명 | 인증 |
-|--------|------|------|------|
-| `POST` | `/api/devices/register` | 장치 등록 요청 | ❌ |
-| `GET` | `/api/devices/status/:hardwareId` | 승인 상태 확인 | ❌ |
-| `GET` | `/api/devices/pending` | 대기 중인 장치 목록 | ✅ |
-| `PUT` | `/api/devices/:deviceId/approve` | 장치 승인 | ✅ |
-| `PUT` | `/api/devices/:deviceId/reject` | 장치 거부 | ✅ |
-
-## 📊 샘플 데이터
-
-### 장치 등록 요청 예시
+#### 장치 등록 요청
 ```json
+POST /api/devices/register
 {
-  "hardwareId": "VM001SEOUL2024",
-  "tenantId": "550e8400-e29b-41d4-a716-446655440001",
-  "ipAddress": "192.168.1.101",
+  "hardwareId": "VM-ABC12345",
+  "tenantId": "550e8400-e29b-41d4-a716-446655440000",
+  "ipAddress": "192.168.1.100",
   "systemInfo": {
-    "os": "Ubuntu",
-    "version": "22.04.3 LTS",
-    "architecture": "x86_64",
-    "memory": "8GB",
-    "storage": "256GB SSD"
+    "os": "Linux 5.4.0",
+    "version": "v16.14.0",
+    "architecture": "x64",
+    "memory": "8GB (6GB 사용 가능)",
+    "storage": "500GB SSD"
   }
 }
 ```
 
-### API 응답 형식
+#### 성공 응답
 ```json
 {
   "status": "success",
-  "message": "등록 요청 완료",
+  "message": "Device registration request submitted successfully"
+}
+```
+
+#### 장치 상태 확인 (승인됨)
+```json
+GET /api/devices/status/VM-ABC12345
+
+{
+  "status": "success",
+  "message": "Device has been approved and is ready for operation",
   "data": {
-    "deviceId": "dev-550e8400-e29b-41d4-a716-446655440101",
-    "sqsQueueUrl": "https://sqs.ap-northeast-2.amazonaws.com/..."
+    "status": "approved",
+    "deviceId": "550e8400-e29b-41d4-a716-446655440001",
+    "sqsQueueUrl": "https://sqs.us-east-1.amazonaws.com/123456789/device-550e8400-e29b-41d4-a716-446655440001"
   }
 }
 ```
 
-## 🏆 아키텍처 평가 결과
+## 🔐 보안 고려사항
 
-### 평가 기준 (8개 항목, 가중치 적용)
-1. **입력 검증** (1.5) - 필수값, 형식, 범위 검증
-2. **에러 처리** (1.4) - 구체적 예외, HTTP 상태 코드
-3. **보안 요소** (1.4) - 인증/인가, 접근 제한
-4. **로직 디테일** (1.3) - 요구사항 구현, 가독성
-5. **로직 분리** (1.2) - 계층 분리, 의존성 주입
-6. **API 설계** (1.1) - RESTful, HTTP 메소드
-7. **응답 구조** (1.0) - 일관성, 필드 명명
-8. **확장성** (0.8) - 미래 대응, 설정 분리
+- JWT 토큰 기반 인증
+- 입력값 유효성 검사 (Joi)
+- CORS 설정
+- Helmet.js 보안 헤더
+- 환경 변수를 통한 민감 정보 관리
 
-### 최종 순위
-1. 🥇 **gachaClaudeV2**: 45.29점 - 엔터프라이즈급 완성도
-2. 🥈 **gachaGeminiV2**: 35.58점 - 교육용 최적화
-3. 🥉 **gachaGptV2**: 34.10점 - 모던 프레임워크
+## 🧪 테스트
 
-## 🛠️ 개발 환경 설정
+```bash
+# 백엔드 테스트
+npm test
 
-### 필수 요구사항
-- Node.js 18+
-- TypeScript 4.5+
-- Python 3.7+ (로컬 서버용)
+# 프론트엔드 테스트
+cd frontend
+npm test
+```
 
-### 선택적 도구
-- AWS CLI (실제 DynamoDB/SQS 연동 시)
-- Docker (컨테이너 실행 시)
-- Postman (API 테스트용)
+## 📝 개발 가이드
 
-## 🤝 기여하기
+### 새로운 기능 추가 시
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. **도메인 모델** 정의 (`src/domain/`)
+2. **서비스 로직** 구현 (`src/service/`)
+3. **인터페이스 계층** 구현 (`src/interface/`)
+4. **컨트롤러** 구현 (`src/controllers/`)
+5. **라우팅** 설정 (`src/routes/`)
+6. **프론트엔드 컴포넌트** 구현 (`frontend/src/`)
+
+### 코드 스타일
+
+- TypeScript strict 모드 사용
+- ESLint 규칙 준수
+- SRP(단일 책임 원칙) 적용
+- 의존성 주입 패턴 사용
+
+## 🚀 배포
+
+### Docker를 사용한 배포
+
+```bash
+# 백엔드 Docker 이미지 빌드
+docker build -t vending-machine-backend .
+
+# 프론트엔드 Docker 이미지 빌드
+cd frontend
+docker build -t vending-machine-frontend .
+```
+
+### AWS 배포
+
+1. **EC2** 또는 **ECS**에 백엔드 배포
+2. **S3** + **CloudFront**에 프론트엔드 배포
+3. **DynamoDB** 테이블 생성
+4. **SQS** 큐 설정
+5. **IAM** 역할 및 정책 설정
+
+## 📞 문의
+
+프로젝트 관련 문의사항이 있으시면 이슈를 등록해 주세요.
 
 ## 📄 라이선스
 
-이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 `LICENSE` 파일을 참조하세요.
-
-## 👥 제작자
-
-- **시스템 아키텍처**: 3가지 구현체 비교 분석
-- **UI/UX 디자인**: 반응형 웹 대시보드
-- **테스트 시나리오**: 포괄적 테스트 케이스
-
-## 🔗 관련 링크
-
-- [UI 데모 가이드](README-UI.md)
-- [API 문서](docs/api.md)
-- [배포 가이드](docs/deployment.md)
-
----
-
-⭐ **이 프로젝트가 도움이 되었다면 Star를 눌러주세요!** ⭐
+MIT License
